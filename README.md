@@ -1,8 +1,10 @@
 # 2018-interactives
 See our [current Code Repository](https://github.com/benetech/accessible-interactives) which is a work in progress for some of the areas we are thinking of and have already started building this out.
 
-[Phet Interactive Simulations](https://phet.colorado.edu/)
+## Background Information
+ [Phet Interactive Simulations](https://phet.colorado.edu/)
 
+## Possible Projects
 * Smoothing function for draggable items. Create a function that can take in array of xy coordinates and return an array of xy coords smoothened to a coherent path. As a simplification, think of it as the smoothing of a curve; the first path is a person moving a mouse and then we "untangle" the movements to produce the user's "intention." Maybe using Kalman filtering? Then possibly plug this into PhET Simulation scaffolding to see it in action.
 * Drag and Drop where path matters. Perhaps it's own topic, and maybe an expansion on the bullet above. Can we make a smoothing curve accurate enough to effect the intentional path, not just destination. To dodge "bad" areas on the way to the end target of the drag, or to follow a specific path.
 * Making IOS 11 multi-item Drag and drop sessions for the Web (Changes in ARIA for Drag and Drop) consider best practices.

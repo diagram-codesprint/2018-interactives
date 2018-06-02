@@ -15,3 +15,8 @@ See our [current Code Repository](https://github.com/benetech/accessible-interac
     * Drag and drop where the speed of the drag matters, [Faraday's Law](https://phet.colorado.edu/sims/html/faradays-law/latest/faradays-law_en.html)
     * Large number of drop targets [Area Builder](https://phet.colorado.edu/sims/html/area-builder/latest/area-builder_en.html).
 
+## Set Up
+
+* Depending on what project we decide on, setting up a PhET development environment may be important to the work. Please see the "Getting Started" section for your OS here https://docs.google.com/document/d/1Ys1EiwnqQGYuzGOcQSr4uXDes35mF1v1XhMZIl10nk8/edit# to get set up with the initial github repos. 
+* Next, clone the diagram demo PhET sim located at https://github.com/phetsims/diagram-demo/, with `git clone https://github.com/phetsims/diagram-demo.git`. This sim will serve a barebones PhET architecture that we can expand on with out code.
+* Clone one more dependency that is needed for this demo: `git clone https://github.com/phetsims/twixt.git`.

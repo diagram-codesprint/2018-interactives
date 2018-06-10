@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8"/>
-  <title>Listbox Example | WAI-ARIA Authoring Practices 1.1</title>
+  <title>Listbox Example | drag and drop example</title>
 
   <!--  Core js and css shaby all examples; do not modify when using this template. -->
   <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
@@ -14,163 +14,72 @@
   <script type="text/javascript">
 
     /**
-   * ARIA Listbox Examples
-   * @function onload
-   * @desc Initialize the listbox examples once the page has loaded
-   */
+     * ARIA Listbox Examples
+     * @function onload
+     * @desc Initialize the listbox examples once the page has loaded
+     */
 
-  window.addEventListener( 'load', function() {
-    var bucketListbox = new aria.Listbox( document.getElementById( 'bucket-list' ) );
-    var bag0Listbox = new aria.Listbox( document.getElementById( 'bag0-list' ) );
+    window.addEventListener( 'load', function() {
+      var bucketListbox = new aria.Listbox( document.getElementById( 'toolbox-bucket_list' ) );
+      var ropeBucketListbox = new aria.Listbox( document.getElementById( 'rope-bucket_list' ) );
+      var bagListbox = new aria.Listbox( document.getElementById( 'bag_list' ) );
 
-    var bucketAddButton = document.getElementById( 'bucket-add' );
-    bucketListbox.setupDelete( bucketAddButton, bag0Listbox );
-    var bag0RemoveButton = document.getElementById( 'bag0-remove' );
-    bag0Listbox.setupDelete( bag0RemoveButton, bucketListbox );
-
-    var bag1Listbox = new aria.Listbox( document.getElementById( 'bag1-list' ) );
-    var ropeBucketListbox = new aria.Listbox( document.getElementById( 'rope-bucket-list' ) );
-
-    var bag1RemoveButton = document.getElementById( 'bag1-remove' );
-    bag1Listbox.setupDelete( bag1RemoveButton, ropeBucketListbox );
-    var ropeBucketAddButton = document.getElementById( 'rope-bucket-add' );
-    ropeBucketListbox.setupDelete( ropeBucketAddButton, bag1Listbox );
-
-    function MyBag() {
-
-      var self = this;
-      this.listboxes = [];
-
-      // {Array.<HTMLElement>} list of all list items that should be in every bag listbox
-      this.data = [];
+      var toolboxBucketAddButton = document.getElementById( 'toolbox-bucket-add' );
+      bucketListbox.setupDelete( toolboxBucketAddButton, bagListbox );
+      var bagRemoveToToolboxButton = document.getElementById( 'toolbox-bucket-take' );
 
 
-      var cloneHTMLElement = function( htmlElement ) {
-        var element = document.createElement( htmlElement.tagName );
-
-
-        for ( var i = 0, atts = htmlElement.attributes, n = atts.length; i < n; i++ ) {
-          var attribute = atts[ i ];
-          if ( attribute.name !== 'id' ) {
-
-            element.setAttribute( attribute.name, attribute.nodeValue );
-          }
-        }
-        element.innerHTML = htmlElement.innerHTML;
-
-        return element;
-
-      };
-      this.renderBagContents = function() {
-        this.listboxes.forEach( function( listbox ) {
-
-          var node = listbox.listboxNode;
-
-
-          while ( node.firstChild ) {
-            node.removeChild( node.firstChild );
-          }
-          self.data.forEach( function( liItem ) {
-            var clone = cloneHTMLElement( liItem );
-            node.appendChild( clone );
-          } );
-
-        } );
-      };
-
-      this.update = function( liItems ) {
-        self.data = liItems;
-        self.renderBagContents();
-      };
-    }
-
-
-    var bag = new MyBag();
-    bag.listboxes = [ bag0Listbox, bag1Listbox ];
-
-    bucketAddButton.addEventListener( 'click', function() {
-      var liItems = Array.prototype.slice.call( bag0Listbox.listboxNode.children );
-      bag.update( liItems );
-    } );
-    ropeBucketAddButton.addEventListener( 'click', function() {
-      var liItems = Array.prototype.slice.call( bag1Listbox.listboxNode.children );
-      bag.update( liItems );
-    } );
-
-    bag0RemoveButton.addEventListener( 'click', function() {
-      var liItems = Array.prototype.slice.call( bag0Listbox.listboxNode.children );
-      bag.update( liItems );
+      var ropeBucketAddButton = document.getElementById( 'rope-bucket-add' );
+      ropeBucketListbox.setupDelete( ropeBucketAddButton, bagListbox );
+      var bagRemoveToRopeButtonButton = document.getElementById( 'rope-bucket-take' );
+      bagListbox.setupDelete( bagRemoveToRopeButtonButton, ropeBucketListbox );
+      bagListbox.setupDelete( bagRemoveToToolboxButton, bucketListbox );
 
     } );
-    bag1RemoveButton.addEventListener( 'click', function() {
-
-      var liItems = Array.prototype.slice.call( bag1Listbox.listboxNode.children );
-      bag.update( liItems );
-    } );
-  } );
   </script>
 
 </head>
 
 <body>
 <main>
-
-
   <section>
-    <div role="separator" id="bucket_start_sep" aria-labelledby="bucket_start_sep bucket_label"
-         aria-label="Start of"></div>
-    <div id="bucket-interaction">
+    <div id="interaction">
       <div class="listbox-area">
         <div class="left-area">
-          <span id="bucket">Red bucket</span>
-          <ul id="bucket-list" tabindex="0" role="listbox" aria-labelledby="bucket" aria-multiselectable="true">
-            <li id="bucket_opt1" role="option" aria-selected="false" class="puller-large">Large Puller</li>
-            <li id="bucket_opt2" role="option" aria-selected="false" class="puller-small">Small Puller</li>
-            <li id="bucket_opt3" role="option" aria-selected="false" class="puller-small">Small Puller</li>
-            <li id="bucket_opt4" role="option" aria-selected="false" class="puller-medium">Medium Puller</li>
+          <span id="toolbox-bucket-label">Toolbox Bucket</span>
+          <ul id="toolbox-bucket_list" tabindex="0" role="listbox" aria-labelledby="toolbox-bucket-label" aria-multiselectable="true">
+            <li id="toolbox-bucket_opt1" role="option" aria-selected="false" class="puller-large">Large Puller</li>
+            <li id="toolbox-bucket_opt2" role="option" aria-selected="false" class="puller-small">Small Puller</li>
+            <li id="toolbox-bucket_opt3" role="option" aria-selected="false" class="puller-small">Small Puller</li>
+            <li id="toolbox-bucket_opt4" role="option" aria-selected="false" class="puller-medium">Medium Puller</li>
           </ul>
-          <button id="bucket-add" class="move-right-btn" aria-keyshortcuts="Alt+ArrowRight Delete" aria-disabled="true">
+          <button id="toolbox-bucket-add" class="move-right-btn" aria-keyshortcuts="" aria-disabled="true">
             Add
           </button>
+          <button id="toolbox-bucket-take" class="move-left-btn" aria-keyshortcuts="" aria-disabled="true">
+            Take
+          </button>
+          
         </div>
         <div class="right-area">
-          <span id="bag0-label">My bag</span>
-          <ul id="bag0-list" tabindex="0" role="listbox" aria-labelledby="rope-bucket-label" aria-activedescendant=""
-              aria-multiselectable="true">
-          </ul>
-          <button id="bag0-remove" class="move-left-btn" aria-keyshortcuts="Alt+ArrowLeft Delete" aria-disabled="true">
-            Remove
-          </button>
-        </div>
-      </div>
-    </div>
-    <div role="separator" id="bucket_end_sep" aria-labelledby="ex2_end_sep ex2_label" aria-label="End of"></div>
-
-
-    <div role="separator" id="ex2_start_sep" aria-labelledby="ex2_start_sep ex2_label" aria-label="Start of"></div>
-    <div id="rope-bucket">
-      <div class="listbox-area">
-        <div class="left-area">
-          <span id="label_bucket">My bag</span>
-          <ul id="bag1-list" tabindex="0" role="listbox" aria-labelledby="label_bucket" aria-multiselectable="true">
-          </ul>
-          <button id="bag1-remove" class="move-right-btn" aria-keyshortcuts="Alt+ArrowRight Delete"
-                  aria-disabled="true">Remove
-          </button>
-        </div>
-        <div class="right-area">
-          <span id="rope-bucket-label">Red rope bucket</span>
-          <ul id="rope-bucket-list" tabindex="0" role="listbox" aria-labelledby="rope-bucket-label"
+          <span id="rope-bucket-label">Rope bucket</span>
+          <ul id="rope-bucket_list" tabindex="0" role="listbox" aria-labelledby="rope-bucket-label"
               aria-activedescendant="" aria-multiselectable="true">
           </ul>
-          <button id="rope-bucket-add" class="move-left-btn" aria-keyshortcuts="Alt+ArrowLeft Delete"
+          <button id="rope-bucket-add" class="move-right-btn" aria-keyshortcuts=""
                   aria-disabled="true">Add
           </button>
+          <button id="rope-bucket-take" class="move-left-btn" aria-keyshortcuts="" aria-disabled="true">
+            Take
+          </button>
         </div>
+        <span id="bag-label">My Bag</span>
+        <div class="center-area"><ul id="bag_list" tabindex="0" role="listbox" aria-labelledby="bag-label" aria-activedescendant=""
+            aria-multiselectable="true">
+        </div>
+        </ul>
       </div>
     </div>
-    <div role="separator" id="ex2_end_sep" aria-labelledby="ex2_end_sep ex2_label" aria-label="End of"></div>
-
   </section>
 </main>
 </body>

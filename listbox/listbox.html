@@ -14,100 +14,142 @@
   <script type="text/javascript">
 
     /**
-   * ARIA Listbox Examples
-   * @function onload
-   * @desc Initialize the listbox examples once the page has loaded
-   */
+     * ARIA Listbox Examples
+     * @function onload
+     * @desc Initialize the listbox examples once the page has loaded
+     */
 
-  window.addEventListener( 'load', function() {
-    var bucketListbox = new aria.Listbox( document.getElementById( 'bucket-list' ) );
-    var bag0Listbox = new aria.Listbox( document.getElementById( 'bag0-list' ) );
+    window.addEventListener( 'load', function() {
+      var bucketListbox = new aria.Listbox( document.getElementById( 'bucket_list' ) );
+      var bag0Listbox = new aria.Listbox( document.getElementById( 'bag0_list' ) );
 
-    var bucketAddButton = document.getElementById( 'bucket-add' );
-    bucketListbox.setupDelete( bucketAddButton, bag0Listbox );
-    var bag0RemoveButton = document.getElementById( 'bag0-remove' );
-    bag0Listbox.setupDelete( bag0RemoveButton, bucketListbox );
+      var bucketAddButton = document.getElementById( 'bucket-add' );
+      bucketListbox.setupDelete( bucketAddButton, bag0Listbox );
+      var bag0RemoveButton = document.getElementById( 'bag0-remove' );
+      bag0Listbox.setupDelete( bag0RemoveButton, bucketListbox );
 
-    var bag1Listbox = new aria.Listbox( document.getElementById( 'bag1-list' ) );
-    var ropeBucketListbox = new aria.Listbox( document.getElementById( 'rope-bucket-list' ) );
+      var bag1Listbox = new aria.Listbox( document.getElementById( 'bag1_list' ) );
+      var ropeBucketListbox = new aria.Listbox( document.getElementById( 'rope-bucket_list' ) );
 
-    var bag1RemoveButton = document.getElementById( 'bag1-remove' );
-    bag1Listbox.setupDelete( bag1RemoveButton, ropeBucketListbox );
-    var ropeBucketAddButton = document.getElementById( 'rope-bucket-add' );
-    ropeBucketListbox.setupDelete( ropeBucketAddButton, bag1Listbox );
+      var bag1RemoveButton = document.getElementById( 'bag1-remove' );
+      bag1Listbox.setupDelete( bag1RemoveButton, ropeBucketListbox );
+      var ropeBucketAddButton = document.getElementById( 'rope-bucket-add' );
+      ropeBucketListbox.setupDelete( ropeBucketAddButton, bag1Listbox );
 
-    function MyBag() {
+      function MyBag() {
 
-      var self = this;
-      this.listboxes = [];
+        var self = this;
+        this.listboxes = [];
 
-      // {Array.<HTMLElement>} list of all list items that should be in every bag listbox
-      this.data = [];
+        // {Array.<HTMLElement>} list of all list items that should be in every bag listbox
+        this.data = [];
+
+        var setId = function( oldId, prefix ) {
+          return prefix + '_' + oldId.split( '_' )[ 1 ];
+        };
+
+        var cloneHTMLElement = function( htmlElement, idPrefix ) {
+          var element = document.createElement( htmlElement.tagName );
 
 
-      var cloneHTMLElement = function( htmlElement ) {
-        var element = document.createElement( htmlElement.tagName );
+          for ( var i = 0, atts = htmlElement.attributes, n = atts.length; i < n; i++ ) {
+            var attribute = atts[ i ];
+            if ( attribute.name === 'id' ) {
+              var id = attribute.nodeValue;
 
+              // this assumes li elements only have one underscore in it.
+              element.setAttribute( 'id', setId( id, idPrefix  ) );
 
-        for ( var i = 0, atts = htmlElement.attributes, n = atts.length; i < n; i++ ) {
-          var attribute = atts[ i ];
-          if ( attribute.name !== 'id' ) {
+            }
+            // else if ( attribute.name === 'class' ) {
+              // element.setAttribute( attribute.name, attribute.nodeValue.replace, '' ) );
 
-            element.setAttribute( attribute.name, attribute.nodeValue );
+            // }
+            else {
+              element.setAttribute( attribute.name, attribute.nodeValue );
+
+            }
           }
-        }
-        element.innerHTML = htmlElement.innerHTML;
+          element.innerHTML = htmlElement.innerHTML;
 
-        return element;
+          return element;
+        };
 
-      };
-      this.renderBagContents = function() {
-        this.listboxes.forEach( function( listbox ) {
+        var cloneHTMLElements = function( list, idPrefix ) {
 
-          var node = listbox.listboxNode;
+          var clone = [];
 
-
-          while ( node.firstChild ) {
-            node.removeChild( node.firstChild );
-          }
-          self.data.forEach( function( liItem ) {
-            var clone = cloneHTMLElement( liItem );
-            node.appendChild( clone );
+          list.forEach( function( item ) {
+            clone.push( cloneHTMLElement( item, idPrefix ) );
           } );
 
-        } );
-      };
+          return clone;
+        };
 
-      this.update = function( liItems ) {
-        self.data = liItems;
-        self.renderBagContents();
-      };
-    }
+        this.renderBagContents = function() {
+          this.listboxes.forEach( function( listbox ) {
+
+            var node = listbox.listboxNode;
+
+            // clone self.data for this listbox:
+            var dataClone = [];
+            self.data.forEach( function( item ) {
+              dataClone.push( cloneHTMLElement( item, listbox.listboxNode.id ) );
+            } );
 
 
-    var bag = new MyBag();
-    bag.listboxes = [ bag0Listbox, bag1Listbox ];
+            if( listbox.activeDescendant){
+              var listboxId = setId( listbox.activeDescendant, listbox.listboxNode.id  );
+              listbox.activeDescendant = listboxId;
+              node.setAttribute( 'aria-activedescendant', listboxId );
+            }
 
-    bucketAddButton.addEventListener( 'click', function() {
-      var liItems = Array.prototype.slice.call( bag0Listbox.listboxNode.children );
-      bag.update( liItems );
+            // iterate through ul children and set all to aria-selected="true"
+            for ( var liChild of node.children ) {
+
+              liChild.setAttribute( 'aria-selected', 'true' );
+            }
+
+
+            // delete all from the listbox
+            listbox.deleteItems();
+
+
+            // add all elements from data
+            listbox.addItems( dataClone );
+          } );
+        };
+
+        this.update = function( liItems ) {
+          self.data = cloneHTMLElements( liItems, 'data' );
+          self.renderBagContents();
+        };
+      }
+
+
+      var bag = new MyBag();
+      bag.listboxes = [ bag0Listbox, bag1Listbox ];
+
+      bucketAddButton.addEventListener( 'click', function() {
+        var liItems = Array.prototype.slice.call( bag0Listbox.listboxNode.children );
+        bag.update( liItems );
+      } );
+      ropeBucketAddButton.addEventListener( 'click', function() {
+        var liItems = Array.prototype.slice.call( bag1Listbox.listboxNode.children );
+        bag.update( liItems );
+      } );
+
+      bag0RemoveButton.addEventListener( 'click', function() {
+        var liItems = Array.prototype.slice.call( bag0Listbox.listboxNode.children );
+        bag.update( liItems );
+
+      } );
+      bag1RemoveButton.addEventListener( 'click', function() {
+
+        var liItems = Array.prototype.slice.call( bag1Listbox.listboxNode.children );
+        bag.update( liItems );
+      } );
     } );
-    ropeBucketAddButton.addEventListener( 'click', function() {
-      var liItems = Array.prototype.slice.call( bag1Listbox.listboxNode.children );
-      bag.update( liItems );
-    } );
-
-    bag0RemoveButton.addEventListener( 'click', function() {
-      var liItems = Array.prototype.slice.call( bag0Listbox.listboxNode.children );
-      bag.update( liItems );
-
-    } );
-    bag1RemoveButton.addEventListener( 'click', function() {
-
-      var liItems = Array.prototype.slice.call( bag1Listbox.listboxNode.children );
-      bag.update( liItems );
-    } );
-  } );
   </script>
 
 </head>
@@ -123,7 +165,7 @@
       <div class="listbox-area">
         <div class="left-area">
           <span id="bucket">Red bucket</span>
-          <ul id="bucket-list" tabindex="0" role="listbox" aria-labelledby="bucket" aria-multiselectable="true">
+          <ul id="bucket_list" tabindex="0" role="listbox" aria-labelledby="bucket" aria-multiselectable="true">
             <li id="bucket_opt1" role="option" aria-selected="false" class="puller-large">Large Puller</li>
             <li id="bucket_opt2" role="option" aria-selected="false" class="puller-small">Small Puller</li>
             <li id="bucket_opt3" role="option" aria-selected="false" class="puller-small">Small Puller</li>
@@ -135,7 +177,7 @@
         </div>
         <div class="right-area">
           <span id="bag0-label">My bag</span>
-          <ul id="bag0-list" tabindex="0" role="listbox" aria-labelledby="rope-bucket-label" aria-activedescendant=""
+          <ul id="bag0_list" tabindex="0" role="listbox" aria-labelledby="rope-bucket-label" aria-activedescendant=""
               aria-multiselectable="true">
           </ul>
           <button id="bag0-remove" class="move-left-btn" aria-keyshortcuts="Alt+ArrowLeft Delete" aria-disabled="true">
@@ -152,7 +194,7 @@
       <div class="listbox-area">
         <div class="left-area">
           <span id="label_bucket">My bag</span>
-          <ul id="bag1-list" tabindex="0" role="listbox" aria-labelledby="label_bucket" aria-multiselectable="true">
+          <ul id="bag1_list" tabindex="0" role="listbox" aria-labelledby="label_bucket" aria-multiselectable="true">
           </ul>
           <button id="bag1-remove" class="move-right-btn" aria-keyshortcuts="Alt+ArrowRight Delete"
                   aria-disabled="true">Remove
@@ -160,7 +202,7 @@
         </div>
         <div class="right-area">
           <span id="rope-bucket-label">Red rope bucket</span>
-          <ul id="rope-bucket-list" tabindex="0" role="listbox" aria-labelledby="rope-bucket-label"
+          <ul id="rope-bucket_list" tabindex="0" role="listbox" aria-labelledby="rope-bucket-label"
               aria-activedescendant="" aria-multiselectable="true">
           </ul>
           <button id="rope-bucket-add" class="move-left-btn" aria-keyshortcuts="Alt+ArrowLeft Delete"
